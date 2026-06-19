@@ -802,6 +802,13 @@
         pointer-events: none;
       }
 
+      .emoji-img {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.1em;
+      }
+
       .image-modal {
         position: fixed;
         inset: 0;
@@ -1565,6 +1572,7 @@
             const tick = () => {
               if (index >= text.length) {
                 caret.remove();
+                if (window.__applyEmojis) window.__applyEmojis(target);
                 resolve();
                 return;
               }
@@ -1716,7 +1724,13 @@
           ext: '.svg'
         };
 
+        const useNativeEmojiOnIos = (() => {
+          return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        })();
+
         function applyEmojis(root = document.body) {
+          if (useNativeEmojiOnIos) return;
           if (!window.twemoji) return;
 
           if (EMOJI_CONFIG.provider === 'local') {
@@ -1750,7 +1764,7 @@
           }, 160);
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function initEmojiReplacement() {
           applyEmojis();
           const observer = new MutationObserver(scheduleParse);
           observer.observe(document.body, { childList: true, subtree: true, characterData: true });
@@ -1758,7 +1772,13 @@
           // expose helpers for debugging or swapping provider at runtime
           window.__applyEmojis = applyEmojis;
           window.__emojiConfig = EMOJI_CONFIG;
-        });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initEmojiReplacement);
+        } else {
+          initEmojiReplacement();
+        }
       })();
     </script>
   </body>
