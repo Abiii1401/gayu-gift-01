@@ -1714,43 +1714,52 @@
       })();
     </script>
 
-    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    <script
+      src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+      crossorigin="anonymous"
+    ></script>
     <script>
       (function () {
         const EMOJI_CONFIG = {
-          provider: 'twemoji', // 'twemoji' or 'local'
-          localBase: '/assets/apple-emojis/', // when using local assets place SVGs here (by codepoint)
-          folder: 'svg',
-          ext: '.svg'
+          provider: "twemoji", // 'twemoji' or 'local'
+          localBase: "/assets/apple-emojis/", // when using local assets place SVGs here (by codepoint)
+          folder: "svg",
+          ext: ".svg",
         };
 
         const useNativeEmojiOnIos = (() => {
-          return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          return (
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+          );
         })();
 
         function applyEmojis(root = document.body) {
           if (useNativeEmojiOnIos) return;
           if (!window.twemoji) return;
 
-          if (EMOJI_CONFIG.provider === 'local') {
+          if (EMOJI_CONFIG.provider === "local") {
             twemoji.parse(root, {
               base: EMOJI_CONFIG.localBase,
               folder: EMOJI_CONFIG.folder,
-              ext: EMOJI_CONFIG.ext
+              ext: EMOJI_CONFIG.ext,
             });
           } else {
-            twemoji.parse(root, { folder: EMOJI_CONFIG.folder, ext: EMOJI_CONFIG.ext });
+            twemoji.parse(root, {
+              folder: EMOJI_CONFIG.folder,
+              ext: EMOJI_CONFIG.ext,
+            });
           }
 
           // Ensure accessibility and sizing on generated images
-          root.querySelectorAll('img[alt]').forEach((img) => {
-            if (!img.getAttribute('role')) img.setAttribute('role', 'img');
-            if (!img.getAttribute('aria-label')) img.setAttribute('aria-label', img.getAttribute('alt') || '');
-            img.classList.add('emoji-img');
-            img.style.width = img.style.width || '1em';
-            img.style.height = img.style.height || '1em';
-            img.style.verticalAlign = img.style.verticalAlign || '-0.1em';
+          root.querySelectorAll("img[alt]").forEach((img) => {
+            if (!img.getAttribute("role")) img.setAttribute("role", "img");
+            if (!img.getAttribute("aria-label"))
+              img.setAttribute("aria-label", img.getAttribute("alt") || "");
+            img.classList.add("emoji-img");
+            img.style.width = img.style.width || "1em";
+            img.style.height = img.style.height || "1em";
+            img.style.verticalAlign = img.style.verticalAlign || "-0.1em";
           });
         }
 
@@ -1767,15 +1776,19 @@
         function initEmojiReplacement() {
           applyEmojis();
           const observer = new MutationObserver(scheduleParse);
-          observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+          });
 
           // expose helpers for debugging or swapping provider at runtime
           window.__applyEmojis = applyEmojis;
           window.__emojiConfig = EMOJI_CONFIG;
         }
 
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initEmojiReplacement);
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initEmojiReplacement);
         } else {
           initEmojiReplacement();
         }
